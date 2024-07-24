@@ -21,7 +21,7 @@ module.exports = {
   },
   settings: {
     tailwindcss: {
-      callees: ["clsx"],
+      callees: ["clsx", "cn"],
     },
     react: {
       version: "detect",
@@ -36,5 +36,12 @@ module.exports = {
       "error",
       { prefer: "type-imports", fixStyle: "separate-type-imports" },
     ],
+    "react/prop-types": "off",
   },
+  overrides: [
+    {
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
+      files: ["./**/*.js"],
+    },
+  ],
 };
