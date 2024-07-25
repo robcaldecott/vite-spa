@@ -33,3 +33,13 @@ export interface Chart {
   key: string;
   value: number;
 }
+
+export interface VehicleList {
+  summary: {
+    total: number;
+    totalPages: number;
+    page: number;
+    pageSize: number;
+  };
+  vehicles: Array<Vehicle>;
+}

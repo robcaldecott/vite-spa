@@ -1,5 +1,12 @@
 import ky from "ky";
-import type { Chart, Session, Summary, User, Vehicle } from "./types";
+import type {
+  Chart,
+  Session,
+  Summary,
+  User,
+  Vehicle,
+  VehicleList,
+} from "./types";
 
 const api = ky.create({ prefixUrl: import.meta.env.VITE_API_URL });
 
@@ -31,7 +38,9 @@ export async function getChartData(
   return chartData;
 }
 
-export async function getVehicles() {
-  const vehicles: Array<Vehicle> = await api.get("/api/vehicles").json();
+export async function getVehicles(page: number, q: string) {
+  const vehicles: VehicleList = await api
+    .get("/api/vehicles", { searchParams: { page, q } })
+    .json();
   return vehicles;
 }

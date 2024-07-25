@@ -14,6 +14,7 @@ import { ThemeProvider } from "./components/theme-provider.tsx";
 import { Index } from "./routes/index.tsx";
 import { Login } from "./routes/login.tsx";
 import { Root } from "./routes/root.tsx";
+import { Vehicles } from "./routes/vehicles.tsx";
 
 async function enableMocking() {
   const { worker } = await import("./mocks/browser");
@@ -84,7 +85,7 @@ void enableMocking().then(() => {
       loader: Root.loader,
       children: [
         { index: true, element: <Index />, loader: Index.loader },
-        { path: "vehicles", element: <h1>Vehicles</h1> },
+        { path: "vehicles", element: <Vehicles />, loader: Vehicles.loader },
         { path: "add", element: <h1>Add</h1> },
       ],
     },

@@ -114,7 +114,11 @@ function MobileNavigationItem(props: {
 function MobileNavigation(props: { open: boolean; onOpenChange: () => void }) {
   return (
     <Sheet open={props.open} onOpenChange={props.onOpenChange}>
-      <SheetContent side="left" aria-describedby={undefined}>
+      <SheetContent
+        className="max-w-72"
+        side="left"
+        aria-describedby={undefined}
+      >
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
         <nav className="mr-6 flex flex-col gap-4">
           <MobileNavigationItem

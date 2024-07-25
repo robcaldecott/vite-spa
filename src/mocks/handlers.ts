@@ -1,7 +1,14 @@
 import { fakerEN_GB as faker } from "@faker-js/faker";
 import type { DefaultBodyType, PathParams } from "msw";
 import { delay, http, HttpResponse } from "msw";
-import type { Chart, Session, Summary, User, Vehicle } from "../types";
+import type {
+  Chart,
+  Session,
+  Summary,
+  User,
+  Vehicle,
+  VehicleList,
+} from "../types";
 
 const user: User = {
   id: faker.string.uuid(),
@@ -10,8 +17,10 @@ const user: User = {
   avatar: faker.image.avatarGitHub(),
 };
 
+const vehicleCount = faker.number.int({ min: 75, max: 125 });
+
 // Generate vehicle mocks
-const vehicles: Array<Vehicle> = [...Array(100).keys()].map(() => ({
+const vehicles: Array<Vehicle> = [...Array(vehicleCount).keys()].map(() => ({
   id: faker.string.uuid(),
   vrm: faker.vehicle.vrm(),
   manufacturer: faker.vehicle.manufacturer(),
@@ -145,12 +154,44 @@ export const handlers = [
     },
   ),
 
-  http.get<PathParams, DefaultBodyType, Array<Vehicle>>(
+  http.get<PathParams, DefaultBodyType, VehicleList>(
     `${import.meta.env.VITE_API_URL}/api/vehicles`,
-    async () => {
+    async ({ request }) => {
       await delay();
 
-      return HttpResponse.json(vehicles.slice(0, 10));
+      const url = new URL(request.url);
+      const page = Number(url.searchParams.get("page"));
+      const pageSize = 10;
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const q = url.searchParams.get("q");
+
+      // Filter the results
+      const filtered = vehicles.filter((vehicle) => {
+        if (q) {
+          if (vehicle.manufacturer.toLowerCase().includes(q.toLowerCase())) {
+            return true;
+          }
+          if (vehicle.model.toLowerCase().includes(q.toLowerCase())) {
+            return true;
+          }
+          if (vehicle.type.toLowerCase().includes(q.toLowerCase())) {
+            return true;
+          }
+          return false;
+        }
+        return true;
+      });
+
+      return HttpResponse.json({
+        summary: {
+          total: filtered.length,
+          totalPages: Math.ceil(filtered.length / pageSize),
+          page,
+          pageSize,
+        },
+        vehicles: filtered.slice(start, end),
+      });
     },
   ),
 ];
