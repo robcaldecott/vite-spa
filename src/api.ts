@@ -44,3 +44,8 @@ export async function getVehicles(page: number, q: string) {
     .json();
   return vehicles;
 }
+
+export async function getVehicle(id: string) {
+  const vehicle: Vehicle = await api.get(`/api/vehicles/${id}`).json();
+  return vehicle;
+}

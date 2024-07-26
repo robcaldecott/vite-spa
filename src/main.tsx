@@ -11,6 +11,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLoading } from "./components/app-loading.tsx";
 import { NotFound } from "./components/not-found.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
+import { Details } from "./routes/details.tsx";
 import { Index } from "./routes/index.tsx";
 import { Login } from "./routes/login.tsx";
 import { Root } from "./routes/root.tsx";
@@ -23,69 +24,37 @@ async function enableMocking() {
   return worker.start({ onUnhandledRequest: "bypass" });
 }
 
-// function Details() {
-//   const [open, setOpen] = React.useState(true);
-//   const navigate = useNavigate();
-
-//   return (
-//     <Sheet
-//       open={open}
-//       onOpenChange={() => {
-//         setOpen(false);
-//         setTimeout(() => navigate(-1), 150);
-//       }}
-//     >
-//       <SheetContent>
-//         <SheetHeader>
-//           <SheetTitle>Are you absolutely sure?</SheetTitle>
-//           <SheetDescription>
-//             This action cannot be undone. This will permanently delete your
-//             account and remove your data from our servers.
-//           </SheetDescription>
-//         </SheetHeader>
-//       </SheetContent>
-//     </Sheet>
-//   );
-// }
-
 void enableMocking().then(() => {
-  // const router = createBrowserRouter([
-  //   {
-  //     path: "/",
-  //     element: <Root />,
-  //     children: [
-  //       {
-  //         path: "/",
-  //         element: (
-  //           <>
-  //             <Index />
-  //             <Outlet />
-  //             <Link to="/create">Create</Link>
-  //           </>
-  //         ),
-  //         loader: Index.loader,
-  //         children: [{ path: ":id", element: <Details /> }],
-  //       },
-  //       {
-  //         path: "/create",
-  //         element: <div>Create</div>,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     path: "*",
-  //     element: <NotFound />,
-  //   },
-  // ]);
-
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Root />,
       loader: Root.loader,
+      shouldRevalidate: () => {
+        // Only load the user profile once
+        return false;
+      },
       children: [
         { index: true, element: <Index />, loader: Index.loader },
-        { path: "vehicles", element: <Vehicles />, loader: Vehicles.loader },
+        {
+          path: "vehicles",
+          element: <Vehicles />,
+          loader: Vehicles.loader,
+          shouldRevalidate: ({
+            nextParams,
+            currentParams,
+            defaultShouldRevalidate,
+          }) => {
+            if (nextParams.id || currentParams.id) {
+              // If we are showing or hiding vehicle details then do not revalidate
+              return false;
+            }
+            return defaultShouldRevalidate;
+          },
+          children: [
+            { path: ":id", element: <Details />, loader: Details.loader },
+          ],
+        },
         { path: "add", element: <h1>Add</h1> },
       ],
     },

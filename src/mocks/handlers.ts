@@ -1,5 +1,5 @@
 import { fakerEN_GB as faker } from "@faker-js/faker";
-import type { DefaultBodyType, PathParams } from "msw";
+import type { DefaultBodyType, PathParams, StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import type {
   Chart,
@@ -192,6 +192,19 @@ export const handlers = [
         },
         vehicles: filtered.slice(start, end),
       });
+    },
+  ),
+
+  http.get<PathParams, DefaultBodyType, Vehicle>(
+    `${import.meta.env.VITE_API_URL}/api/vehicles/:id`,
+    async ({ params }) => {
+      await delay();
+
+      const vehicle = vehicles.find((v) => v.id === params.id);
+      if (vehicle === undefined) {
+        return new HttpResponse(null, { status: 404 }) as StrictResponse<never>;
+      }
+      return HttpResponse.json(vehicle);
     },
   ),
 ];
