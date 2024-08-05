@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { getChartData, getSummary } from "../api";
 import { FuelChart } from "../components/fuel-chart";
 import { OemChart } from "../components/oem-chart";
@@ -30,6 +30,9 @@ export function Index() {
 
   return (
     <div className="space-y-6">
+      <Link to="/test">Test</Link>
+      <Link to="/test/123">Test</Link>
+
       {/* Stats */}
       <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <Statistic
@@ -57,40 +60,3 @@ export function Index() {
     </div>
   );
 }
-
-// export function Index2() {
-//   const { vehicles } = useLoaderData() as { vehicles: Array<Vehicle> };
-
-//   return (
-//     <div className="rounded-xl bg-background">
-//       <div className="flex items-center gap-4 p-4">
-//         <h1 className="grow text-xl font-semibold text-primary">Inventory</h1>
-//         <Input className="w-64 rounded-full" placeholder="Search" />
-//       </div>
-
-//       <Table>
-//         <TableHeader>
-//           <TableRow>
-//             <TableHead>Registration</TableHead>
-//             <TableHead>Description</TableHead>
-//           </TableRow>
-//         </TableHeader>
-//         <TableBody>
-//           {vehicles.map((vehicle) => (
-//             <TableRow key={vehicle.id}>
-//               <TableCell>
-//                 <Link
-//                   to={`/${vehicle.id}`}
-//                   className="text-primary underline-offset-4 hover:underline"
-//                 >
-//                   {vehicle.vrm}
-//                 </Link>
-//               </TableCell>
-//               <TableCell>{`${vehicle.manufacturer} ${vehicle.model} ${vehicle.type}`}</TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </div>
-//   );
-// }

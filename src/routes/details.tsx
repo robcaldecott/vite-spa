@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { getVehicle } from "../api";
+import { Separator } from "../components/separator";
 import {
   Sheet,
   SheetContent,
@@ -55,7 +56,7 @@ export function Details() {
             value={
               <div className="flex items-center gap-1.5">
                 <div
-                  className="size-5 shrink-0 rounded-full border"
+                  className="size-4 shrink-0 rounded-full border"
                   style={{ backgroundColor: getWebColor(vehicle.color) }}
                 />
                 <span>{getColorName(vehicle.color)}</span>
@@ -69,7 +70,12 @@ export function Details() {
               minimumFractionDigits: 0,
             })}
           />
-          <Detail label="Registration date" value={vehicle.registrationDate} />
+          <Detail
+            label="Registration date"
+            value={new Intl.DateTimeFormat("en-GB", {
+              dateStyle: "long",
+            }).format(new Date(vehicle.registrationDate))}
+          />
           <Detail label="VIN" value={vehicle.vin} />
         </dl>
       </SheetContent>

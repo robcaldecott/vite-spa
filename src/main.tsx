@@ -37,6 +37,14 @@ void enableMocking().then(() => {
       children: [
         { index: true, element: <Index />, loader: Index.loader },
         {
+          path: "test",
+          element: <h1>Test</h1>,
+        },
+        {
+          path: "test/:id",
+          element: <h1>ID</h1>,
+        },
+        {
           path: "vehicles",
           element: <Vehicles />,
           loader: Vehicles.loader,
