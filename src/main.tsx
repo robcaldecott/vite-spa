@@ -9,6 +9,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLoading } from "./components/app-loading.tsx";
+import { ErrorPage } from "./components/error-page.tsx";
 import { NotFound } from "./components/not-found.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { Toaster } from "./components/toaster.tsx";
@@ -33,6 +34,7 @@ void enableMocking().then(() => {
       path: "/",
       element: <Root />,
       loader: Root.loader,
+      errorElement: <ErrorPage />,
       shouldRevalidate: () => {
         // Only load the user profile once
         return false;
@@ -42,28 +44,32 @@ void enableMocking().then(() => {
           index: true,
           element: <Index />,
           loader: Index.loader,
+          errorElement: <ErrorPage />,
         },
         {
           path: "vehicles",
           element: <Vehicles />,
           loader: Vehicles.loader,
+          errorElement: <ErrorPage />,
         },
         {
           path: "vehicles/:id",
           element: <Details />,
           loader: Details.loader,
+          errorElement: <ErrorPage />,
         },
         {
           path: "vehicles/:id/destroy",
           element: <Destroy />,
           action: Destroy.action,
-          errorElement: <h1>Error deleting the vehicle. Please try again.</h1>,
+          errorElement: <ErrorPage />,
         },
         {
           path: "add",
           element: <Add />,
           loader: Add.loader,
           action: Add.action,
+          errorElement: <ErrorPage />,
         },
       ],
     },
@@ -74,7 +80,7 @@ void enableMocking().then(() => {
     },
     {
       path: "*",
-      element: <NotFound />,
+      element: <ErrorPage />,
     },
   ]);
 

@@ -9,7 +9,10 @@ import type {
   VehicleList,
 } from "./types";
 
-const api = ky.create({ prefixUrl: import.meta.env.VITE_API_URL });
+const api = ky.create({
+  prefixUrl: import.meta.env.VITE_API_URL,
+  retry: 0,
+});
 
 export async function login(email: string, password: string) {
   const user: Session = await api
