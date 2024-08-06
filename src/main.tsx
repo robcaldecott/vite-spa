@@ -80,7 +80,7 @@ void enableMocking().then(() => {
     },
     {
       path: "*",
-      element: <ErrorPage />,
+      element: <NotFound />,
     },
   ]);
 

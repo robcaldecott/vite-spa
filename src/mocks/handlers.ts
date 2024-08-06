@@ -35,11 +35,13 @@ let vehicles: Array<Vehicle> = [...Array(vehicleCount).keys()].map(() => ({
   price: faker.commerce.price({ min: 2000, max: 50000 }),
 }));
 
+const DELAY = undefined;
+
 export const handlers = [
   http.post<PathParams, DefaultBodyType, Session>(
     `${import.meta.env.VITE_API_URL}/api/login`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       return HttpResponse.json({ token: faker.string.uuid() });
     },
@@ -48,7 +50,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, User>(
     `${import.meta.env.VITE_API_URL}/api/me`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       return HttpResponse.json(user);
     },
@@ -57,7 +59,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Summary>(
     `${import.meta.env.VITE_API_URL}/api/summary`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       return HttpResponse.json({
         count: vehicles.length,
@@ -73,7 +75,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Array<Chart>>(
     `${import.meta.env.VITE_API_URL}/api/chart`,
     async ({ request }) => {
-      await delay();
+      await delay(DELAY);
 
       const url = new URL(request.url);
       const type = url.searchParams.get("type");
@@ -158,7 +160,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, VehicleList>(
     `${import.meta.env.VITE_API_URL}/api/vehicles`,
     async ({ request }) => {
-      await delay();
+      await delay(DELAY);
 
       const url = new URL(request.url);
       const page = Number(url.searchParams.get("page"));
@@ -199,7 +201,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Vehicle>(
     `${import.meta.env.VITE_API_URL}/api/vehicles/:id`,
     async ({ params }) => {
-      await delay();
+      await delay(DELAY);
 
       const vehicle = vehicles.find((v) => v.id === params.id);
       if (vehicle === undefined) {
@@ -212,7 +214,7 @@ export const handlers = [
   http.delete(
     `${import.meta.env.VITE_API_URL}/api/vehicles/:id`,
     async ({ params }) => {
-      await delay();
+      await delay(DELAY);
 
       // Remove the vehicle from the array
       vehicles = vehicles.filter((v) => v.id !== params.id);
@@ -224,7 +226,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Array<string>>(
     `${import.meta.env.VITE_API_URL}/api/manufacturers`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       // Build a set of manufacturers
       const manufacturers = new Set(
@@ -240,7 +242,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Array<string>>(
     `${import.meta.env.VITE_API_URL}/api/models`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       // Build a set of manufacturers
       const models = new Set(vehicles.map((vehicle) => vehicle.model));
@@ -252,7 +254,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Array<string>>(
     `${import.meta.env.VITE_API_URL}/api/types`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       // Build a set of manufacturers
       const types = new Set(vehicles.map((vehicle) => vehicle.type));
@@ -264,7 +266,7 @@ export const handlers = [
   http.get<PathParams, DefaultBodyType, Array<string>>(
     `${import.meta.env.VITE_API_URL}/api/colors`,
     async () => {
-      await delay();
+      await delay(DELAY);
 
       // Build a set of manufacturers
       const colors = new Set(vehicles.map((vehicle) => vehicle.color));
@@ -276,7 +278,7 @@ export const handlers = [
   http.post<PathParams, VehicleFormData, Vehicle>(
     `${import.meta.env.VITE_API_URL}/api/vehicles`,
     async ({ request }) => {
-      await delay();
+      await delay(DELAY);
 
       const body = await request.json();
       const vehicle: Vehicle = { ...body, id: faker.string.uuid() };
