@@ -19,9 +19,9 @@ import {
   TooltipTrigger,
 } from "../components/tooltip";
 import { UserAvatar } from "../components/user-avatar";
+import { cn } from "../lib/cn";
+import { privateLoader } from "../lib/private-loader";
 import type { User } from "../types";
-import { cn } from "../utils/cn";
-import { privateLoader } from "../utils/private-loader";
 
 function NavigationItem({
   to,
@@ -147,11 +147,11 @@ function MobileNavigation(props: { open: boolean; onOpenChange: () => void }) {
 
 Root.loader = privateLoader(async () => {
   const user = await getUser();
-  return { user };
+  return user;
 });
 
 export function Root() {
-  const { user } = useLoaderData() as { user: User };
+  const user = useLoaderData() as User;
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
 
   return (

@@ -22,6 +22,7 @@ module.exports = {
   settings: {
     tailwindcss: {
       callees: ["clsx", "cn"],
+      whitelist: ["toaster"],
     },
     react: {
       version: "detect",

@@ -24,7 +24,7 @@ Login.action = async ({ request }: ActionFunctionArgs) => {
   // TODO: handle errors
   const session = await login(obj.email, obj.password);
   // Store the token
-  localStorage.setItem("token", session.token);
+  sessionStorage.setItem("token", session.token);
   // Get the URL and look for a "to" search param
   const url = new URL(request.url);
   // Redirect

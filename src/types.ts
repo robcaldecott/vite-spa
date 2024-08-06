@@ -29,6 +29,8 @@ export interface Vehicle {
   price: string;
 }
 
+export type VehicleFormData = Omit<Vehicle, "id">;
+
 export interface Chart {
   key: string;
   value: number;

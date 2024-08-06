@@ -1,24 +1,81 @@
 import * as React from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { Form, useLoaderData, useNavigation } from "react-router-dom";
+import { toast } from "sonner";
 import { getVehicle } from "../api";
-import { Separator } from "../components/separator";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "../components/sheet";
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/alert-dialog";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../components/breadcrumb";
+import { Button } from "../components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/card";
+import { LoadingButton } from "../components/loading-button";
+import { Separator } from "../components/separator";
+import { getColorName, getWebColor } from "../lib/color";
+import { formatCurrency, formatNumber } from "../lib/intl";
+import { privateLoader } from "../lib/private-loader";
 import type { Vehicle } from "../types";
-import { getColorName, getWebColor } from "../utils/color";
-import { formatCurrency, formatNumber } from "../utils/intl";
-import { privateLoader } from "../utils/private-loader";
 
 function Detail(props: { label: React.ReactNode; value: React.ReactNode }) {
   return (
     <>
       <dt className="font-semibold text-muted-foreground">{props.label}</dt>
-      <dd className="mb-4">{props.value}</dd>
+      <dd className="mb-4 last:mb-0">{props.value}</dd>
     </>
+  );
+}
+
+function DeleteButton(props: { submitting: boolean }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive">Delete</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent asChild>
+        <Form method="post" action="destroy">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this vehicle?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              vehicle from your stock inventory.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {/* We need a form submit button here */}
+            <LoadingButton
+              type="submit"
+              variant="destructive"
+              loading={props.submitting}
+            >
+              Delete
+            </LoadingButton>
+          </AlertDialogFooter>
+        </Form>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -30,55 +87,81 @@ Details.loader = privateLoader(async ({ params }) => {
 // TODO: use defer
 export function Details() {
   const vehicle = useLoaderData() as Vehicle;
-  const [open, setOpen] = React.useState(true);
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    if (
+      navigation.state === "loading" &&
+      navigation.formAction?.includes("destroy")
+    ) {
+      toast.success("Vehicle successfully deleted");
+    }
+  }, [navigation]);
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={() => {
-        setOpen(false);
-        setTimeout(() => navigate(-1), 150);
-      }}
-    >
-      <SheetContent aria-describedby={undefined}>
-        <SheetHeader>
-          <SheetTitle>{vehicle.vrm}</SheetTitle>
-        </SheetHeader>
+    <>
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/vehicles">Vehicles</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{vehicle.vrm}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-        <dl className="mt-6 text-sm">
-          <Detail label="Manufacturer" value={vehicle.manufacturer} />
-          <Detail label="Model" value={vehicle.model} />
-          <Detail label="Type" value={vehicle.type} />
-          <Detail label="Fuel" value={vehicle.fuel} />
-          <Detail
-            label="Color"
-            value={
-              <div className="flex items-center gap-1.5">
-                <div
-                  className="size-4 shrink-0 rounded-full border"
-                  style={{ backgroundColor: getWebColor(vehicle.color) }}
-                />
-                <span>{getColorName(vehicle.color)}</span>
-              </div>
-            }
-          />
-          <Detail label="Mileage" value={formatNumber(vehicle.mileage)} />
-          <Detail
-            label="Price"
-            value={formatCurrency(parseInt(vehicle.price, 10), {
-              minimumFractionDigits: 0,
-            })}
-          />
-          <Detail
-            label="Registration date"
-            value={new Intl.DateTimeFormat("en-GB", {
-              dateStyle: "long",
-            }).format(new Date(vehicle.registrationDate))}
-          />
-          <Detail label="VIN" value={vehicle.vin} />
-        </dl>
-      </SheetContent>
-    </Sheet>
+      <Card>
+        <CardHeader>
+          <CardTitle>{vehicle.vrm}</CardTitle>
+          <CardDescription>
+            {vehicle.manufacturer} {vehicle.model}
+          </CardDescription>
+        </CardHeader>
+        <Separator />
+        <CardContent>
+          <dl className="mt-6 text-base">
+            <Detail label="Manufacturer" value={vehicle.manufacturer} />
+            <Detail label="Model" value={vehicle.model} />
+            <Detail label="Type" value={vehicle.type} />
+            <Detail label="Fuel" value={vehicle.fuel} />
+            <Detail
+              label="Color"
+              value={
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className="size-4 shrink-0 rounded-full border"
+                    style={{ backgroundColor: getWebColor(vehicle.color) }}
+                  />
+                  <span>{getColorName(vehicle.color)}</span>
+                </div>
+              }
+            />
+            <Detail label="Mileage" value={formatNumber(vehicle.mileage)} />
+            <Detail
+              label="Price"
+              value={formatCurrency(parseInt(vehicle.price, 10), {
+                minimumFractionDigits: 0,
+              })}
+            />
+            <Detail
+              label="Registration date"
+              value={new Intl.DateTimeFormat("en-GB", {
+                dateStyle: "long",
+              }).format(new Date(vehicle.registrationDate))}
+            />
+            <Detail label="VIN" value={vehicle.vin} />
+          </dl>
+        </CardContent>
+        <CardFooter>
+          <DeleteButton submitting={navigation.state === "submitting"} />
+        </CardFooter>
+      </Card>
+    </>
   );
 }

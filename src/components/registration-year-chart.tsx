@@ -5,7 +5,7 @@ import type { ChartConfig } from "./chart";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart";
 
 export function RegistrationYearChart(props: { data: Array<Chart> }) {
-  const yearChartConfig: ChartConfig = { value: { label: "Value" } };
+  const yearChartConfig: ChartConfig = { value: { label: "Vehicles" } };
 
   return (
     <Card className="col-span-1 md:col-span-2">

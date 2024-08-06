@@ -11,6 +11,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLoading } from "./components/app-loading.tsx";
 import { NotFound } from "./components/not-found.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
+import { Toaster } from "./components/toaster.tsx";
+import { Add } from "./routes/add.tsx";
+import { Destroy } from "./routes/destroy.tsx";
 import { Details } from "./routes/details.tsx";
 import { Index } from "./routes/index.tsx";
 import { Login } from "./routes/login.tsx";
@@ -35,35 +38,33 @@ void enableMocking().then(() => {
         return false;
       },
       children: [
-        { index: true, element: <Index />, loader: Index.loader },
         {
-          path: "test",
-          element: <h1>Test</h1>,
-        },
-        {
-          path: "test/:id",
-          element: <h1>ID</h1>,
+          index: true,
+          element: <Index />,
+          loader: Index.loader,
         },
         {
           path: "vehicles",
           element: <Vehicles />,
           loader: Vehicles.loader,
-          shouldRevalidate: ({
-            nextParams,
-            currentParams,
-            defaultShouldRevalidate,
-          }) => {
-            if (nextParams.id || currentParams.id) {
-              // If we are showing or hiding vehicle details then do not revalidate
-              return false;
-            }
-            return defaultShouldRevalidate;
-          },
-          children: [
-            { path: ":id", element: <Details />, loader: Details.loader },
-          ],
         },
-        { path: "add", element: <h1>Add</h1> },
+        {
+          path: "vehicles/:id",
+          element: <Details />,
+          loader: Details.loader,
+        },
+        {
+          path: "vehicles/:id/destroy",
+          element: <Destroy />,
+          action: Destroy.action,
+          errorElement: <h1>Error deleting the vehicle. Please try again.</h1>,
+        },
+        {
+          path: "add",
+          element: <Add />,
+          loader: Add.loader,
+          action: Add.action,
+        },
       ],
     },
     {
@@ -81,6 +82,7 @@ void enableMocking().then(() => {
     <React.StrictMode>
       <ThemeProvider>
         <RouterProvider router={router} fallbackElement={<AppLoading />} />
+        <Toaster />
       </ThemeProvider>
     </React.StrictMode>,
   );

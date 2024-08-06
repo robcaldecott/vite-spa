@@ -8,7 +8,7 @@ export function privateLoader(loader: LoaderFunction) {
   return function (params: LoaderFunctionArgs) {
     const url = new URL(params.request.url);
 
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return redirect(`/login?to=${url.pathname}`);
     }

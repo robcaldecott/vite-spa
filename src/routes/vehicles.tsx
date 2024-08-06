@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   Link,
-  Outlet,
   useLoaderData,
   useNavigation,
   useSearchParams,
@@ -9,6 +8,14 @@ import {
 import { ChevronLeft, ChevronRight, Info, Loader2, Search } from "lucide-react";
 import { getVehicles } from "../api";
 import { Badge } from "../components/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../components/breadcrumb";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { Input } from "../components/input";
@@ -21,10 +28,10 @@ import {
   TableHeader,
   TableRow,
 } from "../components/table";
+import { getWebColor } from "../lib/color";
+import { formatCurrency } from "../lib/intl";
+import { privateLoader } from "../lib/private-loader";
 import type { VehicleList } from "../types";
-import { getWebColor } from "../utils/color";
-import { formatCurrency } from "../utils/intl";
-import { privateLoader } from "../utils/private-loader";
 
 const fuelLabels: Record<string, string> = {
   Gasoline: "Petrol",
@@ -61,6 +68,18 @@ export function Vehicles() {
 
   return (
     <>
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Vehicles</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <Card>
         <div className="flex flex-wrap items-center gap-4 p-4">
           <div className="flex grow gap-2">
@@ -201,8 +220,6 @@ export function Vehicles() {
           </>
         )}
       </Card>
-
-      <Outlet />
     </>
   );
 }

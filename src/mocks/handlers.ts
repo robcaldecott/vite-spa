@@ -7,6 +7,7 @@ import type {
   Summary,
   User,
   Vehicle,
+  VehicleFormData,
   VehicleList,
 } from "../types";
 
@@ -20,7 +21,7 @@ const user: User = {
 const vehicleCount = faker.number.int({ min: 75, max: 125 });
 
 // Generate vehicle mocks
-const vehicles: Array<Vehicle> = [...Array(vehicleCount).keys()].map(() => ({
+let vehicles: Array<Vehicle> = [...Array(vehicleCount).keys()].map(() => ({
   id: faker.string.uuid(),
   vrm: faker.vehicle.vrm(),
   manufacturer: faker.vehicle.manufacturer(),
@@ -204,6 +205,84 @@ export const handlers = [
       if (vehicle === undefined) {
         return new HttpResponse(null, { status: 404 }) as StrictResponse<never>;
       }
+      return HttpResponse.json(vehicle);
+    },
+  ),
+
+  http.delete(
+    `${import.meta.env.VITE_API_URL}/api/vehicles/:id`,
+    async ({ params }) => {
+      await delay();
+
+      // Remove the vehicle from the array
+      vehicles = vehicles.filter((v) => v.id !== params.id);
+
+      return HttpResponse.json({});
+    },
+  ),
+
+  http.get<PathParams, DefaultBodyType, Array<string>>(
+    `${import.meta.env.VITE_API_URL}/api/manufacturers`,
+    async () => {
+      await delay();
+
+      // Build a set of manufacturers
+      const manufacturers = new Set(
+        vehicles.map((vehicle) => vehicle.manufacturer),
+      );
+
+      return HttpResponse.json(
+        [...manufacturers].sort((a, b) => a.localeCompare(b)),
+      );
+    },
+  ),
+
+  http.get<PathParams, DefaultBodyType, Array<string>>(
+    `${import.meta.env.VITE_API_URL}/api/models`,
+    async () => {
+      await delay();
+
+      // Build a set of manufacturers
+      const models = new Set(vehicles.map((vehicle) => vehicle.model));
+
+      return HttpResponse.json([...models].sort((a, b) => a.localeCompare(b)));
+    },
+  ),
+
+  http.get<PathParams, DefaultBodyType, Array<string>>(
+    `${import.meta.env.VITE_API_URL}/api/types`,
+    async () => {
+      await delay();
+
+      // Build a set of manufacturers
+      const types = new Set(vehicles.map((vehicle) => vehicle.type));
+
+      return HttpResponse.json([...types].sort((a, b) => a.localeCompare(b)));
+    },
+  ),
+
+  http.get<PathParams, DefaultBodyType, Array<string>>(
+    `${import.meta.env.VITE_API_URL}/api/colors`,
+    async () => {
+      await delay();
+
+      // Build a set of manufacturers
+      const colors = new Set(vehicles.map((vehicle) => vehicle.color));
+
+      return HttpResponse.json([...colors].sort((a, b) => a.localeCompare(b)));
+    },
+  ),
+
+  http.post<PathParams, VehicleFormData, Vehicle>(
+    `${import.meta.env.VITE_API_URL}/api/vehicles`,
+    async ({ request }) => {
+      await delay();
+
+      const body = await request.json();
+      const vehicle: Vehicle = { ...body, id: faker.string.uuid() };
+      // Add to the array
+      vehicles.push(vehicle);
+      // Return the new vehicle
       return HttpResponse.json(vehicle);
     },
   ),

@@ -5,6 +5,7 @@ import type {
   Summary,
   User,
   Vehicle,
+  VehicleFormData,
   VehicleList,
 } from "./types";
 
@@ -47,5 +48,39 @@ export async function getVehicles(page: number, q: string) {
 
 export async function getVehicle(id: string) {
   const vehicle: Vehicle = await api.get(`/api/vehicles/${id}`).json();
+  return vehicle;
+}
+
+export async function deleteVehicle(id: string) {
+  const result = await api.delete(`/api/vehicles/${id}`).json();
+  return result;
+}
+
+export async function getManufacturers() {
+  const manufacturers: Array<string> = await api
+    .get("/api/manufacturers")
+    .json();
+  return manufacturers;
+}
+
+export async function getModels() {
+  const models: Array<string> = await api.get("/api/models").json();
+  return models;
+}
+
+export async function getTypes() {
+  const types: Array<string> = await api.get("/api/types").json();
+  return types;
+}
+
+export async function getColors() {
+  const colors: Array<string> = await api.get("/api/colors").json();
+  return colors;
+}
+
+export async function createVehicle(body: VehicleFormData) {
+  const vehicle: Vehicle = await api
+    .post("/api/vehicles", { json: body })
+    .json();
   return vehicle;
 }
