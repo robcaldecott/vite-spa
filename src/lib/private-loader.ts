@@ -6,10 +6,9 @@ import {
 
 export function privateLoader(loader: LoaderFunction) {
   return function (params: LoaderFunctionArgs) {
-    const url = new URL(params.request.url);
-
     const token = sessionStorage.getItem("token");
     if (!token) {
+      const url = new URL(params.request.url);
       return redirect(`/login?to=${url.pathname}`);
     }
     return loader(params);

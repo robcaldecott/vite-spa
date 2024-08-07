@@ -1,11 +1,6 @@
 import * as React from "react";
-import {
-  Link,
-  useLoaderData,
-  useNavigation,
-  useSearchParams,
-} from "react-router-dom";
-import { ChevronLeft, ChevronRight, Info, Loader2, Search } from "lucide-react";
+import { Link, useLoaderData, useSearchParams } from "react-router-dom";
+import { Info, Search } from "lucide-react";
 import { Badge } from "../components/badge";
 import {
   Breadcrumb,
@@ -18,6 +13,14 @@ import {
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { Input } from "../components/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationSummary,
+} from "../components/pagination";
 import { Separator } from "../components/separator";
 import {
   Table,
@@ -41,7 +44,6 @@ const fuelLabels: Record<string, string> = {
 export function Component() {
   const { summary, vehicles } = useLoaderData() as VehicleList;
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigation = useNavigation();
   const [query, setQuery] = React.useState(searchParams.get("q") || "");
 
   React.useEffect(() => {
@@ -173,37 +175,28 @@ export function Component() {
                 <Separator />
 
                 {/* Pagination */}
-                <div className="flex flex-wrap items-center justify-end gap-4 p-4">
-                  <p className="w-full grow text-center text-sm sm:w-auto sm:text-left">
-                    Page {summary.page} of {summary.totalPages}
-                  </p>
-
-                  {navigation.state === "loading" && (
-                    <Loader2 className="hidden size-8 shrink-0 animate-spin text-primary sm:block" />
-                  )}
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="grow gap-1 sm:grow-0"
-                    disabled={summary.page === 1}
-                    onClick={() => setPage(summary.page - 1)}
-                  >
-                    <ChevronLeft className="size-4" />
-                    <span>Previous</span>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="grow gap-1 sm:grow-0"
-                    disabled={summary.page === summary.totalPages}
-                    onClick={() => setPage(summary.page + 1)}
-                  >
-                    <span>Next</span>
-                    <ChevronRight className="size-4" />
-                  </Button>
-                </div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem variant="summary">
+                      <PaginationSummary
+                        page={summary.page}
+                        totalPages={summary.totalPages}
+                      />
+                    </PaginationItem>
+                    <PaginationItem variant="button">
+                      <PaginationPrevious
+                        disabled={summary.page === 1}
+                        onClick={() => setPage(summary.page - 1)}
+                      />
+                    </PaginationItem>
+                    <PaginationItem variant="button">
+                      <PaginationNext
+                        disabled={summary.page === summary.totalPages}
+                        onClick={() => setPage(summary.page + 1)}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </>
             )}
           </>
