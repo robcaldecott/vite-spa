@@ -7,8 +7,6 @@ export function ErrorPage() {
   const error = useRouteError();
   const location = useLocation();
 
-  console.log(error);
-
   const message = error instanceof Error ? error.message : "";
 
   return (

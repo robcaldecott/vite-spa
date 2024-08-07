@@ -9,6 +9,7 @@ module.exports = {
     "plugin:react/jsx-runtime",
     "plugin:jsx-a11y/recommended",
     "plugin:tailwindcss/recommended",
+    "plugin:storybook/recommended",
   ],
   plugins: ["react-refresh"],
   ignorePatterns: ["dist", ".eslintrc.cjs"],

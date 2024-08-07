@@ -4,7 +4,7 @@ import { cn } from "../lib/cn";
 import type { ButtonProps } from "./button";
 import { Button } from "./button";
 
-interface LoadingButtonProps extends ButtonProps {
+export interface LoadingButtonProps extends ButtonProps {
   loading: boolean;
 }
 

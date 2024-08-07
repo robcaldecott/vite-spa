@@ -38,12 +38,14 @@ export function PaginationItem({
 }
 
 export function PaginationSummary({
+  page,
+  totalPages,
   className,
   ...props
 }: React.ComponentProps<"p"> & { page: number; totalPages: number }) {
   return (
     <p className={cn("text-center text-sm sm:text-left", className)} {...props}>
-      Page {props.page} of {props.totalPages}
+      Page {page} of {totalPages}
     </p>
   );
 }
