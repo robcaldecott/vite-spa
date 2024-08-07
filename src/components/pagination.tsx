@@ -4,7 +4,11 @@ import { cn } from "../lib/cn";
 import { Button } from "./button";
 
 export function Pagination(props: React.ComponentProps<"nav">) {
-  return <nav {...props}>{props.children}</nav>;
+  return (
+    <nav role="navigation" aria-label="Pagination" {...props}>
+      {props.children}
+    </nav>
+  );
 }
 
 export function PaginationContent(props: React.ComponentProps<"ul">) {
@@ -68,7 +72,7 @@ export function PaginationPrevious(
   props: Omit<React.ComponentProps<typeof Button>, "children">,
 ) {
   return (
-    <PaginationButton {...props}>
+    <PaginationButton aria-label="Go to previous page" {...props}>
       <ChevronLeft className="size-4" />
       <span>Previous</span>
     </PaginationButton>
@@ -79,7 +83,7 @@ export function PaginationNext(
   props: Omit<React.ComponentProps<typeof Button>, "children">,
 ) {
   return (
-    <PaginationButton {...props}>
+    <PaginationButton aria-label="Go to next page" {...props}>
       <span>Next</span>
       <ChevronRight className="size-4" />
     </PaginationButton>
