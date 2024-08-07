@@ -1,32 +1,18 @@
 import { useLoaderData } from "react-router-dom";
-import { getChartData, getSummary } from "../api";
 import { FuelChart } from "../components/fuel-chart";
 import { OemChart } from "../components/oem-chart";
 import { RegistrationYearChart } from "../components/registration-year-chart";
 import { Statistic } from "../components/statistic";
 import { formatCurrency, formatNumber } from "../lib/intl";
-import { privateLoader } from "../lib/private-loader";
-
-type LoaderData = {
-  summary: Awaited<ReturnType<typeof getSummary>>;
-  fuelChart: Awaited<ReturnType<typeof getChartData>>;
-  oemChart: Awaited<ReturnType<typeof getChartData>>;
-  yearChart: Awaited<ReturnType<typeof getChartData>>;
-};
-
-Index.loader = privateLoader(async () => {
-  const [summary, fuelChart, oemChart, yearChart] = await Promise.all([
-    getSummary(),
-    getChartData("FUEL_TYPE"),
-    getChartData("OEM"),
-    getChartData("REGISTRATION_YEAR"),
-  ]);
-  return { summary, fuelChart, oemChart, yearChart };
-});
+import type { Chart, Summary } from "../types";
 
 export function Index() {
-  const { summary, fuelChart, oemChart, yearChart } =
-    useLoaderData() as LoaderData;
+  const { summary, fuelChart, oemChart, yearChart } = useLoaderData() as {
+    summary: Summary;
+    fuelChart: Array<Chart>;
+    oemChart: Array<Chart>;
+    yearChart: Array<Chart>;
+  };
 
   return (
     <div className="space-y-6">

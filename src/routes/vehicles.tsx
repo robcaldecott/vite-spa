@@ -6,7 +6,6 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Info, Loader2, Search } from "lucide-react";
-import { getVehicles } from "../api";
 import { Badge } from "../components/badge";
 import {
   Breadcrumb,
@@ -30,7 +29,6 @@ import {
 } from "../components/table";
 import { getWebColor } from "../lib/color";
 import { formatCurrency } from "../lib/intl";
-import { privateLoader } from "../lib/private-loader";
 import type { VehicleList } from "../types";
 
 const fuelLabels: Record<string, string> = {
@@ -40,16 +38,7 @@ const fuelLabels: Record<string, string> = {
   Electric: "Electric",
 };
 
-Vehicles.loader = privateLoader(async ({ request }) => {
-  const url = new URL(request.url);
-  const page = Number(url.searchParams.get("page") || "1");
-  const q = url.searchParams.get("q") || "";
-  const vehicles = await getVehicles(page, q);
-
-  return vehicles;
-});
-
-export function Vehicles() {
+export function Component() {
   const { summary, vehicles } = useLoaderData() as VehicleList;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigation = useNavigation();

@@ -7,19 +7,33 @@ import "@fontsource/inter/700.css";
 import "./index.css";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from "react-router-dom";
+import {
+  createVehicle,
+  deleteVehicle,
+  getChartData,
+  getColors,
+  getManufacturers,
+  getModels,
+  getSummary,
+  getTypes,
+  getUser,
+  getVehicle,
+  getVehicles,
+  login,
+} from "./api.ts";
 import { AppLoading } from "./components/app-loading.tsx";
 import { ErrorPage } from "./components/error-page.tsx";
 import { NotFound } from "./components/not-found.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { Toaster } from "./components/toaster.tsx";
-import { Add } from "./routes/add.tsx";
-import { Destroy } from "./routes/destroy.tsx";
-import { Details } from "./routes/details.tsx";
+import { privateLoader } from "./lib/private-loader.ts";
 import { Index } from "./routes/index.tsx";
-import { Login } from "./routes/login.tsx";
 import { Root } from "./routes/root.tsx";
-import { Vehicles } from "./routes/vehicles.tsx";
 
 async function enableMocking() {
   const { worker } = await import("./mocks/browser");
@@ -33,7 +47,7 @@ void enableMocking().then(() => {
     {
       path: "/",
       element: <Root />,
-      loader: Root.loader,
+      loader: privateLoader(async () => await getUser()),
       errorElement: <ErrorPage />,
       shouldRevalidate: () => {
         // Only load the user profile once
@@ -43,40 +57,97 @@ void enableMocking().then(() => {
         {
           index: true,
           element: <Index />,
-          loader: Index.loader,
+          loader: privateLoader(async () => {
+            const [summary, fuelChart, oemChart, yearChart] = await Promise.all(
+              [
+                getSummary(),
+                getChartData("FUEL_TYPE"),
+                getChartData("OEM"),
+                getChartData("REGISTRATION_YEAR"),
+              ],
+            );
+            return { summary, fuelChart, oemChart, yearChart };
+          }),
           errorElement: <ErrorPage />,
         },
         {
           path: "vehicles",
-          element: <Vehicles />,
-          loader: Vehicles.loader,
+          lazy: () => import("./routes/vehicles.tsx"),
+          loader: privateLoader(async ({ request }) => {
+            const url = new URL(request.url);
+            const page = Number(url.searchParams.get("page") || "1");
+            const q = url.searchParams.get("q") || "";
+            const vehicles = await getVehicles(page, q);
+            return vehicles;
+          }),
           errorElement: <ErrorPage />,
         },
         {
           path: "vehicles/:id",
-          element: <Details />,
-          loader: Details.loader,
+          lazy: () => import("./routes/details.tsx"),
+          loader: privateLoader(
+            async ({ params }) => await getVehicle(params.id as string),
+          ),
           errorElement: <ErrorPage />,
         },
         {
           path: "vehicles/:id/destroy",
-          element: <Destroy />,
-          action: Destroy.action,
+          element: null,
+          action: async ({ params }) => {
+            await deleteVehicle(params.id as string);
+            return redirect("/vehicles");
+          },
           errorElement: <ErrorPage />,
         },
         {
           path: "add",
-          element: <Add />,
-          loader: Add.loader,
-          action: Add.action,
+          lazy: () => import("./routes/add.tsx"),
+          loader: privateLoader(async () => {
+            const [manufacturers, models, types, colors] = await Promise.all([
+              getManufacturers(),
+              getModels(),
+              getTypes(),
+              getColors(),
+            ]);
+            return { manufacturers, models, types, colors };
+          }),
+          action: async ({ request }) => {
+            const formData = await request.formData();
+            const vehicle = await createVehicle({
+              vrm: formData.get("vrm") as string,
+              manufacturer: formData.get("manufacturer") as string,
+              model: formData.get("model") as string,
+              type: formData.get("type") as string,
+              color: formData.get("color") as string,
+              fuel: formData.get("fuel") as string,
+              mileage: Number(formData.get("mileage")),
+              price: formData.get("price") as string,
+              registrationDate: formData.get("registrationDate") as string,
+              vin: formData.get("vin") as string,
+            });
+            return redirect(`/vehicles/${vehicle.id}`);
+          },
           errorElement: <ErrorPage />,
         },
       ],
     },
     {
       path: "login",
-      element: <Login />,
-      action: Login.action,
+      lazy: () => import("./routes/login.tsx"),
+      action: async ({ request }) => {
+        const formData = await request.formData();
+        const session = await login(
+          formData.get("email") as string,
+          formData.get("password") as string,
+        );
+        // Store the token
+        sessionStorage.setItem("token", session.token);
+        // Get the URL and look for a "to" search param
+        const url = new URL(request.url);
+        // Redirect
+        return redirect(url.searchParams.get("to") ?? "/");
+      },
+      errorElement: <ErrorPage />,
     },
     {
       path: "*",

@@ -1,12 +1,4 @@
-import type { ActionFunctionArgs } from "react-router-dom";
-import { Form, Link, redirect, useLoaderData } from "react-router-dom";
-import {
-  createVehicle,
-  getColors,
-  getManufacturers,
-  getModels,
-  getTypes,
-} from "../api";
+import { Form, Link, useLoaderData } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,36 +14,8 @@ import { Label } from "../components/label";
 import { Select } from "../components/select";
 import { Separator } from "../components/separator";
 import { getColorName } from "../lib/color";
-import { privateLoader } from "../lib/private-loader";
 
-Add.loader = privateLoader(async () => {
-  const [manufacturers, models, types, colors] = await Promise.all([
-    getManufacturers(),
-    getModels(),
-    getTypes(),
-    getColors(),
-  ]);
-  return { manufacturers, models, types, colors };
-});
-
-Add.action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const vehicle = await createVehicle({
-    vrm: formData.get("vrm") as string,
-    manufacturer: formData.get("manufacturer") as string,
-    model: formData.get("model") as string,
-    type: formData.get("type") as string,
-    color: formData.get("color") as string,
-    fuel: formData.get("fuel") as string,
-    mileage: Number(formData.get("mileage")),
-    price: formData.get("price") as string,
-    registrationDate: formData.get("registrationDate") as string,
-    vin: formData.get("vin") as string,
-  });
-  return redirect(`/vehicles/${vehicle.id}`);
-};
-
-export function Add() {
+export function Component() {
   const { manufacturers, models, types, colors } = useLoaderData() as {
     manufacturers: Array<string>;
     models: Array<string>;

@@ -1,6 +1,4 @@
-import type { ActionFunctionArgs } from "react-router-dom";
-import { Form, redirect } from "react-router-dom";
-import { login } from "../api";
+import { Form } from "react-router-dom";
 import { Button } from "../components/button";
 import {
   Card,
@@ -13,25 +11,7 @@ import {
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-Login.action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const obj = Object.fromEntries(formData) as unknown as LoginFormData;
-  // TODO: handle errors
-  const session = await login(obj.email, obj.password);
-  // Store the token
-  sessionStorage.setItem("token", session.token);
-  // Get the URL and look for a "to" search param
-  const url = new URL(request.url);
-  // Redirect
-  return redirect(url.searchParams.get("to") ?? "/");
-};
-
-export function Login() {
+export function Component() {
   return (
     <Form method="post">
       <div className="flex h-screen w-full items-center justify-center bg-gradient-to-r from-cyan-500 to-primary">
