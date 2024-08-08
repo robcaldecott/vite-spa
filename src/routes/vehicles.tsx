@@ -32,14 +32,8 @@ import {
 } from "../components/table";
 import { getWebColor } from "../lib/color";
 import { formatCurrency } from "../lib/intl";
+import { fuelLabels } from "../lib/labels";
 import type { VehicleList } from "../types";
-
-const fuelLabels: Record<string, string> = {
-  Gasoline: "Petrol",
-  Diesel: "Diesel",
-  Hybrid: "Hybrid",
-  Electric: "Electric",
-};
 
 export function Component() {
   const { summary, vehicles } = useLoaderData() as VehicleList;

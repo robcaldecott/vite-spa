@@ -43,5 +43,17 @@ export interface VehicleList {
     page: number;
     pageSize: number;
   };
-  vehicles: Array<Vehicle>;
+  vehicles: Array<
+    Pick<
+      Vehicle,
+      | "id"
+      | "vrm"
+      | "manufacturer"
+      | "model"
+      | "type"
+      | "color"
+      | "fuel"
+      | "price"
+    >
+  >;
 }

@@ -193,7 +193,16 @@ export const handlers = [
           page,
           pageSize,
         },
-        vehicles: filtered.slice(start, end),
+        vehicles: filtered.slice(start, end).map((vehicle) => ({
+          id: vehicle.id,
+          vrm: vehicle.vrm,
+          manufacturer: vehicle.manufacturer,
+          model: vehicle.model,
+          type: vehicle.type,
+          color: vehicle.color,
+          fuel: vehicle.fuel,
+          price: vehicle.price,
+        })),
       });
     },
   ),

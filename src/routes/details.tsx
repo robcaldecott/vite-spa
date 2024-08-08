@@ -32,6 +32,7 @@ import { LoadingButton } from "../components/loading-button";
 import { Separator } from "../components/separator";
 import { getColorName, getWebColor } from "../lib/color";
 import { formatCurrency, formatNumber } from "../lib/intl";
+import { fuelLabels } from "../lib/labels";
 import type { Vehicle } from "../types";
 
 function Detail(props: { label: React.ReactNode; value: React.ReactNode }) {
@@ -122,9 +123,9 @@ export function Component() {
             <Detail label="Manufacturer" value={vehicle.manufacturer} />
             <Detail label="Model" value={vehicle.model} />
             <Detail label="Type" value={vehicle.type} />
-            <Detail label="Fuel" value={vehicle.fuel} />
+            <Detail label="Fuel" value={fuelLabels[vehicle.fuel]} />
             <Detail
-              label="Color"
+              label="Colour"
               value={
                 <div className="flex items-center gap-1.5">
                   <div

@@ -98,7 +98,7 @@ void enableMocking().then(() => {
           element: null,
           action: async ({ params }) => {
             await deleteVehicle(params.id as string);
-            return redirect("/vehicles");
+            return redirect("/");
           },
           errorElement: <ErrorPage />,
         },

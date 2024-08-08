@@ -40,6 +40,20 @@ test("home", async ({ page }) => {
     page.getByRole("heading", { name: "Vehicle Manager" }),
   ).toBeVisible();
 
+  // Side nax links
+  await expect(page.getByRole("link", { name: "Home" })).toHaveAttribute(
+    "href",
+    "/",
+  );
+  await expect(page.getByRole("link", { name: "Vehicles" })).toHaveAttribute(
+    "href",
+    "/vehicles",
+  );
+  await expect(page.getByRole("link", { name: "Add vehicle" })).toHaveAttribute(
+    "href",
+    "/add",
+  );
+
   // Statistics
   await expect(page.getByText("Vehicles in stock")).toBeVisible();
   await expect(page.getByRole("heading", { name: "104" })).toBeVisible();
