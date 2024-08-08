@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import cookies from "js-cookie";
 import type { User } from "../types";
 import { Button } from "./button";
 import {
@@ -18,6 +19,7 @@ export function UserAvatar(props: { user: User }) {
           variant="outline"
           size="icon"
           className="shrink-0 overflow-hidden rounded-full"
+          aria-label="User menu"
         >
           <img
             className="overflow-hidden rounded-full"
@@ -38,7 +40,7 @@ export function UserAvatar(props: { user: User }) {
           <Link
             to="/login"
             onClick={() => {
-              sessionStorage.removeItem("token");
+              cookies.remove("token");
             }}
           >
             Log out

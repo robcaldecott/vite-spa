@@ -12,6 +12,7 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
+import cookies from "js-cookie";
 import {
   createVehicle,
   deleteVehicle,
@@ -36,10 +37,12 @@ import { Index } from "./routes/index.tsx";
 import { Root } from "./routes/root.tsx";
 
 async function enableMocking() {
-  const { worker } = await import("./mocks/browser");
-  // `worker.start()` returns a Promise that resolves
-  // once the Service Worker is up and ready to intercept requests.
-  return worker.start({ onUnhandledRequest: "bypass" });
+  if (import.meta.env.VITE_MSW === "true") {
+    const { worker } = await import("./mocks/browser");
+    // `worker.start()` returns a Promise that resolves
+    // once the Service Worker is up and ready to intercept requests.
+    return worker.start({ onUnhandledRequest: "bypass" });
+  }
 }
 
 void enableMocking().then(() => {
@@ -141,7 +144,7 @@ void enableMocking().then(() => {
           formData.get("password") as string,
         );
         // Store the token
-        sessionStorage.setItem("token", session.token);
+        cookies.set("token", session.token);
         // Get the URL and look for a "to" search param
         const url = new URL(request.url);
         // Redirect
