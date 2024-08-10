@@ -32,7 +32,10 @@ module.exports = {
   rules: {
     "react-refresh/only-export-components": [
       "warn",
-      { allowConstantExport: true },
+      {
+        allowConstantExport: true,
+        allowExportNames: ["meta", "links", "headers", "loader", "action"],
+      },
     ],
     "@typescript-eslint/consistent-type-imports": [
       "error",

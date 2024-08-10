@@ -3,11 +3,11 @@ import {
   type LoaderFunction,
   type LoaderFunctionArgs,
 } from "react-router-dom";
-import cookies from "js-cookie";
+import Cookies from "js-cookie";
 
 export function privateLoader(loader: LoaderFunction) {
   return function (params: LoaderFunctionArgs) {
-    const token = cookies.get("token");
+    const token = Cookies.get("token");
     if (!token) {
       const url = new URL(params.request.url);
       return redirect(`/login?to=${url.pathname}`);

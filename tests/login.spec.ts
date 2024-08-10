@@ -56,6 +56,25 @@ test("login", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("login errors", async ({ page }) => {
+  await page.route("**/api/login", async (route) => {
+    await route.fulfill({ status: 401 });
+  });
+
+  await page.goto("/login");
+
+  await page
+    .getByRole("textbox", { name: "Email" })
+    .fill("jane.doe@company.com");
+  await page.getByLabel("Password").fill("password123");
+
+  // Sign in
+  await page.getByRole("button", { name: "Sign in" }).click();
+
+  await expect(page.getByRole("heading", { name: "Oops!" })).toBeVisible();
+  await expect(page.getByText("Invalid email or password.")).toBeVisible();
+});
+
 test("logout", async ({ page, context }) => {
   // Add the session cookie
   await context.addCookies([

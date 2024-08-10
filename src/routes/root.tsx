@@ -8,6 +8,7 @@ import {
   useMatch,
 } from "react-router-dom";
 import { Car, CirclePlus, House, Menu } from "lucide-react";
+import { getUser } from "../api";
 import { Button } from "../components/button";
 import { ModeToggle } from "../components/mode-toggle";
 import { Sheet, SheetContent, SheetTitle } from "../components/sheet";
@@ -19,6 +20,7 @@ import {
 } from "../components/tooltip";
 import { UserAvatar } from "../components/user-avatar";
 import { cn } from "../lib/cn";
+import { privateLoader } from "../lib/private-loader";
 import type { User } from "../types";
 
 function NavigationItem({
@@ -142,6 +144,8 @@ function MobileNavigation(props: { open: boolean; onOpenChange: () => void }) {
     </Sheet>
   );
 }
+
+Root.loader = privateLoader(async () => await getUser());
 
 export function Root() {
   const user = useLoaderData() as User;

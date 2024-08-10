@@ -1,5 +1,5 @@
 import { Link, useLocation, useRouteError } from "react-router-dom";
-import { CircleX } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Button } from "./button";
 import { Card } from "./card";
 
@@ -11,7 +11,7 @@ export function ErrorPage() {
 
   return (
     <Card className="m-auto my-6 flex max-w-md flex-col items-center gap-4 p-6">
-      <CircleX className="size-10 text-destructive" />
+      <AlertCircle className="size-10 text-destructive" />
       <h2 className="text-xl font-semibold">Something went wrong!</h2>
 
       {message && (

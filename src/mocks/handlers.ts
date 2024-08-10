@@ -38,12 +38,21 @@ let vehicles: Array<Vehicle> = [...Array(vehicleCount).keys()].map(() => ({
 const DELAY = undefined;
 
 export const handlers = [
-  http.post<PathParams, DefaultBodyType, Session>(
+  http.post<PathParams, { email: string; password: string }, Session>(
     `${import.meta.env.VITE_API_URL}/api/login`,
-    async () => {
+    async ({ request }) => {
       await delay(DELAY);
+      await delay(3000);
 
-      return HttpResponse.json({ token: faker.string.uuid() });
+      const body = await request.json();
+      if (
+        body.email === "jane.doe@company.com" &&
+        body.password === "verystrongpassword"
+      ) {
+        return HttpResponse.json({ token: faker.string.uuid() });
+      }
+
+      return new HttpResponse(null, { status: 401 }) as StrictResponse<never>;
     },
   ),
 

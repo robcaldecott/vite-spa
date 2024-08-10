@@ -1,6 +1,6 @@
-import * as React from "react";
+import type * as React from "react";
 import { Form, useLoaderData, useNavigation } from "react-router-dom";
-import { toast } from "sonner";
+import { getVehicle } from "../api";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -33,6 +33,7 @@ import { Separator } from "../components/separator";
 import { getColorName, getWebColor } from "../lib/color";
 import { formatCurrency, formatNumber } from "../lib/intl";
 import { fuelLabels } from "../lib/labels";
+import { privateLoader } from "../lib/private-loader";
 import type { Vehicle } from "../types";
 
 function Detail(props: { label: React.ReactNode; value: React.ReactNode }) {
@@ -78,19 +79,14 @@ function DeleteButton(props: { submitting: boolean }) {
   );
 }
 
+export const loader = privateLoader(
+  async ({ params }) => await getVehicle(params.id as string),
+);
+
 // TODO: use defer
 export function Component() {
   const vehicle = useLoaderData() as Vehicle;
   const navigation = useNavigation();
-
-  React.useEffect(() => {
-    if (
-      navigation.state === "loading" &&
-      navigation.formAction?.includes("destroy")
-    ) {
-      toast.success("Vehicle successfully deleted");
-    }
-  }, [navigation]);
 
   return (
     <>

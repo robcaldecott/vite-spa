@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link, useLoaderData, useSearchParams } from "react-router-dom";
 import { Info, Search } from "lucide-react";
+import { getVehicles } from "../api";
 import { Badge } from "../components/badge";
 import {
   Breadcrumb,
@@ -33,7 +34,16 @@ import {
 import { getWebColor } from "../lib/color";
 import { formatCurrency } from "../lib/intl";
 import { fuelLabels } from "../lib/labels";
+import { privateLoader } from "../lib/private-loader";
 import type { VehicleList } from "../types";
+
+export const loader = privateLoader(async ({ request }) => {
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page") || "1");
+  const q = url.searchParams.get("q") || "";
+  const vehicles = await getVehicles(page, q);
+  return vehicles;
+});
 
 export function Component() {
   const { summary, vehicles } = useLoaderData() as VehicleList;
@@ -199,3 +209,4 @@ export function Component() {
     </>
   );
 }
+Component.displayName = "Vehicles";
