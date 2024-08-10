@@ -1,5 +1,11 @@
+import { useForm } from "react-hook-form";
 import type { ActionFunctionArgs } from "react-router-dom";
-import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
+import {
+  redirect,
+  useActionData,
+  useNavigation,
+  useSubmit,
+} from "react-router-dom";
 import Cookies from "js-cookie";
 import { HTTPError } from "ky";
 import { AlertCircle } from "lucide-react";
@@ -18,33 +24,16 @@ import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { LoadingButton } from "../components/loading-button";
 
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
 export async function action({ request }: ActionFunctionArgs) {
-  const errors: Record<string, string> = {};
-  const formData = await request.formData();
-
-  // Validate the form fields
-  const email = formData.get("email") as string;
-  if (email === "") {
-    errors.email = "Email is required.";
-  } else if (
-    email.match(
-      /^([A-Z0-9_+-]+\.?)*[A-Z0-9_+-]@([A-Z0-9][A-Z0-9-]*\.)+[A-Z]{2,}$/i,
-    ) === null
-  ) {
-    errors.email = "Please enter a valid email address.";
-  }
-  const password = formData.get("password") as string;
-  if (password === "") {
-    errors.password = "Password is required.";
-  }
-
-  // Do we have any errors?
-  if (Object.keys(errors).length > 0) {
-    return errors;
-  }
+  const json = (await request.json()) as LoginFormData;
 
   try {
-    const session = await login(email, password);
+    const session = await login(json.email, json.password);
     // Store the token
     Cookies.set("token", session.token);
     // Get the URL and look for a "to" search param
@@ -54,18 +43,29 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     // Is this a 401 error?
     if (error instanceof HTTPError && error.response.status === 401) {
-      return { form: "Invalid email or password." };
+      return "Invalid email or password.";
     }
     throw error;
   }
 }
 
 export function Component() {
-  const error = useActionData() as Record<string, string> | undefined;
+  const submitError = useActionData() as string | undefined;
   const navigation = useNavigation();
+  const submit = useSubmit();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>();
 
   return (
-    <Form method="post">
+    <form
+      onSubmit={handleSubmit((data) => {
+        submit(data, { method: "post", encType: "application/json" });
+      })}
+    >
       <div className="flex h-screen w-full items-center justify-center bg-gradient-to-r from-cyan-500 to-primary">
         <Card className="m-6 w-full max-w-sm">
           <CardHeader>
@@ -79,22 +79,30 @@ export function Component() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
-                type="text"
                 defaultValue="jane.doe@company.com"
                 inputMode="email"
+                {...register("email", {
+                  required: "Email is required.",
+                  pattern: {
+                    value:
+                      /^([A-Z0-9_+-]+\.?)*[A-Z0-9_+-]@([A-Z0-9][A-Z0-9-]*\.)+[A-Z]{2,}$/i,
+                    message: "Please enter a valid email address.",
+                  },
+                })}
               />
-              {error?.email && <FormError>{error.email}</FormError>}
+              {errors.email && <FormError>{errors.email.message}</FormError>}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
                 defaultValue="verystrongpassword"
+                {...register("password", { required: "Password is required." })}
               />
-              {error?.password && <FormError>{error.password}</FormError>}
+              {errors.password && (
+                <FormError>{errors.password.message}</FormError>
+              )}
             </div>
           </CardContent>
           <CardFooter>
@@ -107,18 +115,18 @@ export function Component() {
             </LoadingButton>
           </CardFooter>
 
-          {error?.form && (
+          {submitError && (
             <CardFooter>
               <Alert variant="destructive">
                 <AlertCircle className="size-4" />
                 <AlertTitle>Oops!</AlertTitle>
-                <AlertDescription>{error.form}</AlertDescription>
+                <AlertDescription>{submitError}</AlertDescription>
               </Alert>
             </CardFooter>
           )}
         </Card>
       </div>
-    </Form>
+    </form>
   );
 }
 Component.displayName = "Login";

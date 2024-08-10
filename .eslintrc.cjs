@@ -41,6 +41,10 @@ module.exports = {
       "error",
       { prefer: "type-imports", fixStyle: "separate-type-imports" },
     ],
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      { checksVoidReturn: { attributes: false } },
+    ],
     "react/prop-types": "off",
   },
   overrides: [

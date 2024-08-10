@@ -1,5 +1,6 @@
+import { useForm } from "react-hook-form";
 import type { ActionFunctionArgs } from "react-router-dom";
-import { Form, Link, redirect, useLoaderData } from "react-router-dom";
+import { Link, redirect, useLoaderData, useSubmit } from "react-router-dom";
 import {
   createVehicle,
   getColors,
@@ -17,6 +18,7 @@ import {
 } from "../components/breadcrumb";
 import { Button } from "../components/button";
 import { Card, CardContent, CardFooter } from "../components/card";
+import { FormError } from "../components/form-error";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { Select } from "../components/select";
@@ -34,20 +36,22 @@ export const loader = privateLoader(async () => {
   return { manufacturers, models, types, colors };
 });
 
+type AddFormData = {
+  vrm: string;
+  manufacturer: string;
+  model: string;
+  type: string;
+  color: string;
+  fuel: string;
+  mileage: number;
+  registrationDate: string;
+  vin: string;
+  price: string;
+};
+
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const vehicle = await createVehicle({
-    vrm: formData.get("vrm") as string,
-    manufacturer: formData.get("manufacturer") as string,
-    model: formData.get("model") as string,
-    type: formData.get("type") as string,
-    color: formData.get("color") as string,
-    fuel: formData.get("fuel") as string,
-    mileage: Number(formData.get("mileage")),
-    price: formData.get("price") as string,
-    registrationDate: formData.get("registrationDate") as string,
-    vin: formData.get("vin") as string,
-  });
+  const data = (await request.json()) as AddFormData;
+  const vehicle = await createVehicle(data);
   return redirect(`/vehicles/${vehicle.id}`);
 }
 
@@ -58,6 +62,13 @@ export function Component() {
     types: Array<string>;
     colors: Array<string>;
   };
+  const submit = useSubmit();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AddFormData>();
 
   return (
     <>
@@ -73,13 +84,24 @@ export function Component() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <Form method="post">
+      <form
+        onSubmit={handleSubmit((data) => {
+          submit(data, { method: "post", encType: "application/json" });
+        })}
+      >
         <Card>
           <CardContent className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* VRM */}
             <div className="space-y-1">
               <Label htmlFor="vrm">Registration number</Label>
-              <Input id="vrm" name="vrm" type="text" required />
+              <Input
+                id="vrm"
+                type="text"
+                {...register("vrm", {
+                  required: "Please enter the registration number",
+                })}
+              />
+              {errors.vrm && <FormError>{errors.vrm.message}</FormError>}
             </div>
 
             <Separator className="col-span-full" />
@@ -89,9 +111,10 @@ export function Component() {
               <Label htmlFor="manufacturer">Manufacturer</Label>
               <Select
                 id="manufacturer"
-                name="manufacturer"
                 defaultValue=""
-                required
+                {...register("manufacturer", {
+                  required: "Please select a manufacturer",
+                })}
               >
                 <option value="" disabled>
                   Select a manufacturer
@@ -100,12 +123,21 @@ export function Component() {
                   <option key={manufacturer}>{manufacturer}</option>
                 ))}
               </Select>
+              {errors.manufacturer && (
+                <FormError>{errors.manufacturer.message}</FormError>
+              )}
             </div>
 
             {/* Model */}
             <div className="space-y-1">
               <Label htmlFor="model">Model</Label>
-              <Select id="model" name="model" defaultValue="" required>
+              <Select
+                id="model"
+                defaultValue=""
+                {...register("model", {
+                  required: "Please select a model",
+                })}
+              >
                 <option value="" disabled>
                   Select a model
                 </option>
@@ -113,12 +145,19 @@ export function Component() {
                   <option key={model}>{model}</option>
                 ))}
               </Select>
+              {errors.model && <FormError>{errors.model.message}</FormError>}
             </div>
 
             {/* Type */}
             <div className="space-y-1">
               <Label htmlFor="type">Type</Label>
-              <Select id="type" name="type" defaultValue="" required>
+              <Select
+                id="type"
+                defaultValue=""
+                {...register("type", {
+                  required: "Please select a type",
+                })}
+              >
                 <option value="" disabled>
                   Select a type
                 </option>
@@ -126,12 +165,19 @@ export function Component() {
                   <option key={type}>{type}</option>
                 ))}
               </Select>
+              {errors.type && <FormError>{errors.type.message}</FormError>}
             </div>
 
             {/* Color */}
             <div className="space-y-1">
               <Label htmlFor="color">Colour</Label>
-              <Select id="color" name="color" defaultValue="" required>
+              <Select
+                id="color"
+                defaultValue=""
+                {...register("color", {
+                  required: "Please select a colour",
+                })}
+              >
                 <option value="" disabled>
                   Select a colour
                 </option>
@@ -139,12 +185,19 @@ export function Component() {
                   <option key={color}>{getColorName(color)}</option>
                 ))}
               </Select>
+              {errors.color && <FormError>{errors.color.message}</FormError>}
             </div>
 
             {/* Fuel type */}
             <div className="space-y-1">
               <Label htmlFor="fuel">Fuel</Label>
-              <Select id="fuel" name="fuel" defaultValue="" required>
+              <Select
+                id="fuel"
+                defaultValue=""
+                {...register("fuel", {
+                  required: "Please select a fuel type",
+                })}
+              >
                 <option value="" disabled>
                   Select a fuel type
                 </option>
@@ -153,6 +206,7 @@ export function Component() {
                 <option value="Hybrid">Hybrid</option>
                 <option value="Electric">Electric</option>
               </Select>
+              {errors.fuel && <FormError>{errors.fuel.message}</FormError>}
             </div>
 
             {/* Mileage */}
@@ -160,13 +214,16 @@ export function Component() {
               <Label htmlFor="mileage">Mileage</Label>
               <Input
                 id="mileage"
-                name="mileage"
-                type="text"
+                type="number"
                 inputMode="numeric"
-                required
-                pattern="\d*"
-                title="Only whole numbers are allowed"
+                {...register("mileage", {
+                  required: "Please enter the mileage",
+                  valueAsNumber: true,
+                })}
               />
+              {errors.mileage && (
+                <FormError>{errors.mileage.message}</FormError>
+              )}
             </div>
 
             {/* Registration date */}
@@ -174,16 +231,25 @@ export function Component() {
               <Label htmlFor="registrationDate">Registration date</Label>
               <Input
                 id="registrationDate"
-                name="registrationDate"
                 type="date"
-                required
+                {...register("registrationDate", {
+                  required: "Please enter the registration date",
+                })}
               />
+              {errors.registrationDate && (
+                <FormError>{errors.registrationDate.message}</FormError>
+              )}
             </div>
 
             {/* VIN */}
             <div className="space-y-1">
               <Label htmlFor="vin">VIN</Label>
-              <Input id="vin" name="vin" type="text" required />
+              <Input
+                id="vin"
+                type="text"
+                {...register("vin", { required: "Please enter the VIN" })}
+              />
+              {errors.vin && <FormError>{errors.vin.message}</FormError>}
             </div>
 
             {/* Price */}
@@ -191,13 +257,17 @@ export function Component() {
               <Label htmlFor="price">Price</Label>
               <Input
                 id="price"
-                name="price"
                 type="text"
                 inputMode="numeric"
-                required
-                pattern="\d*"
-                title="Only whole numbers are allowed"
+                {...register("price", {
+                  required: "Please enter the price",
+                  pattern: {
+                    value: /^\d*$/,
+                    message: "Only whole numbers are allowed",
+                  },
+                })}
               />
+              {errors.price && <FormError>{errors.price.message}</FormError>}
             </div>
           </CardContent>
           <CardFooter className="flex justify-end gap-4">
@@ -207,7 +277,7 @@ export function Component() {
             <Button type="submit">Add</Button>
           </CardFooter>
         </Card>
-      </Form>
+      </form>
     </>
   );
 }
