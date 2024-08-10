@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/card";
+import { FormError } from "../components/form-error";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { LoadingButton } from "../components/loading-button";
@@ -57,18 +58,6 @@ export async function action({ request }: ActionFunctionArgs) {
     }
     throw error;
   }
-}
-
-function FormError(props: React.PropsWithChildren) {
-  return (
-    <div
-      role="alert"
-      className="flex items-center gap-1 text-sm text-destructive"
-    >
-      <AlertCircle className="size-4" />
-      {props.children}
-    </div>
-  );
 }
 
 export function Component() {

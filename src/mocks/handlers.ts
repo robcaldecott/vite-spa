@@ -42,7 +42,6 @@ export const handlers = [
     `${import.meta.env.VITE_API_URL}/api/login`,
     async ({ request }) => {
       await delay(DELAY);
-      await delay(3000);
 
       const body = await request.json();
       if (
