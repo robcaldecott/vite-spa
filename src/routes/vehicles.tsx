@@ -50,10 +50,6 @@ export function Component() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = React.useState(searchParams.get("q") || "");
 
-  React.useEffect(() => {
-    setQuery(searchParams.get("q") || "");
-  }, [searchParams]);
-
   const setPage = (page: number) => {
     setSearchParams(
       { page: String(page), q: query },

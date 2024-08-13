@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import cookies from "js-cookie";
+import Cookies from "js-cookie";
 import type { User } from "../types";
 import { Button } from "./button";
 import {
@@ -40,7 +40,7 @@ export function UserAvatar(props: { user: User }) {
           <Link
             to="/login"
             onClick={() => {
-              cookies.remove("token");
+              Cookies.remove("token");
             }}
           >
             Log out
