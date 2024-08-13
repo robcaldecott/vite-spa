@@ -7,14 +7,6 @@ import "@fontsource/inter/700.css";
 import "../src/index.css";
 
 const preview: Preview = {
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-  },
   decorators: [
     withThemeByClassName<ReactRenderer>({
       themes: {
